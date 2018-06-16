@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Blog</title>
+    <link rel='stylesheet' href="../assets/bulma.min.css">
+    <link rel="stylesheet" href="../assets/cards.css">
+    <link rel="stylesheet" href="../assets/fontawesome.min.css">
+</head>
+
+<body>
+
+<div class="header-title" style="background: url('../assets/hero.jpg') no-repeat fixed top; background-size: cover">
+    <section class="hero is-medium has-text-centered">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title is-1">Blog</h1>
+                <h3 class="subtitle is-3">Voyager radin !</h3>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <div class="soc">
+                <a href="#"><i class="fa fa-github-alt fa-2x" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-youtube fa-2x" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
+            </div>
+            <p>
+                <strong>Bulma</strong> by <a href="http://jgthms.com">Jeremy Thomas</a>.
+                The source code is licensed <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. <br>
+            </p>
+        </div>
+    </div>
+</footer>
+
+<script src="../assets/bulma.js"></script>
+</body>
+</html>
