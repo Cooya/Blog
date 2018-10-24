@@ -2,14 +2,11 @@
   "name": "coya-blog",
   "version": "0.0.1",
   "description": "Very famous Coya's blog",
-  "main": "back/server.js",
+  "main": "server.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha server/tests --timeout 30000",
-    "start": "NODE_ENV=development node back/server.js",
-    "server": "NODE_ENV=production forever start back/server.js",
-    "daemon": "NODE_ENV=development node back/daemon.js",
-    "build": "webpack --mode production",
-    "dev-build": "webpack --watch=true --mode development"
+    "start": "NODE_ENV=development node server.js",
+    "dev": "NODE_ENV=development nodemon -e js,twig,md server.js",
+    "prod": "NODE_ENV=production forever start server.js"
   },
   "author": "Coya",
   "license": "ISC",
@@ -18,5 +15,8 @@
     "raven": "^2.6.2",
     "showdown": "^1.8.6",
     "twig": "^1.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
   }
 }

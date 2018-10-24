@@ -4,19 +4,35 @@
 <head>
     <meta charset="utf-8">
     <title>Blog</title>
-    <link rel='stylesheet' href="../assets/bulma.min.css">
-    <link rel="stylesheet" href="../assets/cards.css">
-    <link rel="stylesheet" href="../assets/fontawesome.min.css">
+    <link rel='stylesheet' href="/static/css/bulma.min.css">
+    <link rel="stylesheet" href="/static/css/cards.css">
+    <link rel="stylesheet" href="/static/css/fontawesome.min.css">
+    <link rel="stylesheet" href="http://sachinchoolur.github.io/lightGallery/lightgallery/css/lightgallery.css">
+
+    <style>
+        .wallpaper {
+            background: url(/static/pictures/wallpaper.jpg) fixed no-repeat;
+            background-size: cover;
+            background-position-y: 50%;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+        }
+    </style>
 </head>
 
-<body>
+<body style="background-color: lightcyan;">
 
-<div class="header-title" style="background: url('../assets/hero.jpg') no-repeat fixed top; background-size: cover">
+<div class="wallpaper">
+</div>
+
+<div class="header-title">
     <section class="hero is-medium has-text-centered">
         <div class="hero-body">
             <div class="container">
-                <h1 class="title is-1">Blog</h1>
-                <h3 class="subtitle is-3">Voyager radin !</h3>
+                <h1 class="title is-1">Nouvelle-Zélande</h1>
+                <h3 class="subtitle is-3">Carnet de notes</h3>
             </div>
         </div>
     </section>
@@ -24,23 +40,13 @@
 
 {% block content %}{% endblock %}
 
-<footer class="footer">
-    <div class="container">
-        <div class="content has-text-centered">
-            <div class="soc">
-                <a href="#"><i class="fa fa-github-alt fa-2x" aria-hidden="true"></i></a>
-                <a href="#"><i class="fa fa-youtube fa-2x" aria-hidden="true"></i></a>
-                <a href="#"><i class="fa fa-facebook fa-2x" aria-hidden="true"></i></a>
-                <a href="#"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
-            </div>
-            <p>
-                <strong>Bulma</strong> by <a href="http://jgthms.com">Jeremy Thomas</a>.
-                The source code is licensed <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. <br>
-            </p>
-        </div>
-    </div>
-</footer>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+<script src="/static/js/lightgallery-all.min.js"></script>
 
-<script src="../assets/bulma.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.lightgallery').lightGallery();
+    });
+</script>
 </body>
 </html>
