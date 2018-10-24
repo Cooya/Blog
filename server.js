@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
-const converter = new (require('showdown')).Converter();
+const showdown = require('showdown');
 const config = require('./config.js');
 const express = require('express');
 const Raven = require('raven');
@@ -17,6 +17,30 @@ process.on('uncaughtException', (e) => {
 });
 process.on('unhandledRejection', (e) => {
 	console.error(e);
+});
+
+showdown.extension('gallery', function() {
+    return [
+        { 
+            type: 'output',
+            regex: /<img src="([^ ]+)".*\/>/gi,
+            replace: function(s, url) {
+				if(url.match(/^[^\/]+(.jpg|.jpeg|.png)/)) { // only the filename is provided
+					url = config.picturesFolderUrl + url;
+					s = s.replace(/src="[^ ]+"/, 'src="' + url + '"');
+				}
+				//return '<a href="' + url + '">' + s + '</a>'; // old fashion
+				return '<div class="item" data-src="' + url + '">' + s + '</div>'
+            }
+		},
+		{
+			type: 'output',
+			regex: /<p>(<div class="item" ((?!<p>).|\n)+)<\/p>/gi,
+			replace: function(s, match) {
+				return '<div class="lightgallery">' + match + '</div>';
+			}
+		}
+    ]
 });
 
 if(config.sentryEndpoint)
@@ -62,8 +86,8 @@ async function convertArticles(markdownFolder, htmlFolder) {
 		//const header = extractHeaderFromArticle(fileContent, fileName);
 		//articles.push(header.article);
 		//fileContent = fileContent.substring(header.length).trim();
-		let html = converter.makeHtml(fileContent);
-		html = insertGalleryDivs(html);
+		let html = new showdown.Converter({extensions: ['gallery']}).makeHtml(fileContent);
+		//html = insertGalleryDivs(html);
 		await writeFile(htmlFolder + fileName.replace('.md', '.html'), html);
 	});
 	return articles;
@@ -76,8 +100,4 @@ function extractHeaderFromArticle(fileContent, fileName) {
 	header = header ? JSON.parse(header) : {};
 	header.slugUrl = fileName.replace('.md', '');
 	return {article: header, length: result[0].length};
-}
-
-function insertGalleryDivs(html) {
-	return html.replace(/<gallery>/g, '<div class="lightgallery">').replace(/<\/gallery>/g, '</div>');
 }

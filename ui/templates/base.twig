@@ -11,7 +11,7 @@
 
     <style>
         .wallpaper {
-            background: url(/static/pictures/wallpaper.jpg) fixed no-repeat;
+            background: url(/static/pictures/nz1.jpg) fixed no-repeat;
             background-size: cover;
             background-position-y: 50%;
             position: fixed;
@@ -19,10 +19,28 @@
             height: 100%;
             opacity: 0.3;
         }
+
+        .lightgallery {
+            text-align: center;
+        }
+
+        .lightgallery .item {
+            width: 33%;
+            height: 200px;
+            overflow: hidden;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .lightgallery .item img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
 
-<body style="background-color: lightcyan;">
+<body style="background-color: ghostwhite;">
 
 <div class="wallpaper">
 </div>
