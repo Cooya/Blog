@@ -21,9 +21,17 @@ process.on('unhandledRejection', (e) => {
 
 showdown.extension('gallery', function() {
     return [
+		{ 
+            type: 'output',
+            regex: /<img src=".+" alt="([^\"]+)" \/>/gi,
+            replace: function(s, alt) {
+				let res = s.substring(0, s.length - 2) + 'title="' + alt + '">';
+				return res;
+            }
+		},
         { 
             type: 'output',
-            regex: /<img src="([^ ]+)".*\/>/gi,
+            regex: /<img src="([^ ]+)".+>/gi,
             replace: function(s, url) {
 				if(url.match(/^[^\/]+(.jpg|.jpeg|.png)/)) { // only the filename is provided
 					url = config.picturesFolderUrl + url;
