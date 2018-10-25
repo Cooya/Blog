@@ -2,11 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
-const showdown = require('showdown');
-const config = require('./config.js');
 const express = require('express');
 const Raven = require('raven');
+const showdown = require('showdown');
 const twig = require('twig');
+
+const config = require('./config');
+const gallery = require('./gallery_extension');
 
 const readDir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
@@ -19,37 +21,6 @@ process.on('unhandledRejection', (e) => {
 	console.error(e);
 });
 
-showdown.extension('gallery', function() {
-    return [
-		{ 
-            type: 'output',
-            regex: /<img src=".+" alt="([^\"]+)" \/>/gi,
-            replace: function(s, alt) {
-				let res = s.substring(0, s.length - 2) + 'title="' + alt + '">';
-				return res;
-            }
-		},
-        { 
-            type: 'output',
-            regex: /<img src="([^ ]+)".+>/gi,
-            replace: function(s, url) {
-				if(url.match(/^[^\/]+(.jpg|.jpeg|.png)/)) { // only the filename is provided
-					url = config.picturesFolderUrl + url;
-					s = s.replace(/src="[^ ]+"/, 'src="' + url + '"');
-				}
-				//return '<a href="' + url + '">' + s + '</a>'; // old fashion
-				return '<div class="item" data-src="' + url.replace('.thumbnail', '') + '">' + s + '</div>'
-            }
-		},
-		{
-			type: 'output',
-			regex: /<p>(<div class="item" ((?!<p>).|\n)+)<\/p>/gi,
-			replace: function(s, match) {
-				return '<div class="lightgallery">' + match + '</div>';
-			}
-		}
-    ]
-});
 
 if(config.sentryEndpoint)
 	Raven.config(config.sentryEndpoint, {
@@ -75,6 +46,7 @@ if(process.env.NODE_ENV == 'test')
 	module.exports = app;
 else {
 	(async () => {
+		gallery.load(config.picturesFolderUrl);
 		await convertPosts(config.markdownFolder, config.postsFolder);
 
 		app.use('/static', express.static(config.staticFolder));
@@ -95,7 +67,6 @@ async function convertPosts(markdownFolder, htmlFolder) {
 		//posts.push(header.post);
 		//fileContent = fileContent.substring(header.length).trim();
 		let html = new showdown.Converter({extensions: ['gallery']}).makeHtml(fileContent);
-		//html = insertGalleryDivs(html);
 		await writeFile(htmlFolder + fileName.replace('.md', '.html'), html);
 	});
 	return posts;
