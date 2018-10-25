@@ -38,7 +38,7 @@ showdown.extension('gallery', function() {
 					s = s.replace(/src="[^ ]+"/, 'src="' + url + '"');
 				}
 				//return '<a href="' + url + '">' + s + '</a>'; // old fashion
-				return '<div class="item" data-src="' + url + '">' + s + '</div>'
+				return '<div class="item" data-src="' + url.replace('.thumbnail', '') + '">' + s + '</div>'
             }
 		},
 		{
@@ -60,14 +60,14 @@ if(config.sentryEndpoint)
 
 const app = express();
 twig.cache(false);
-app.set('views', config.articlesFolder);
+app.set('views', config.postsFolder);
 
 app.get('/', (req, res, next) => {
 	res.redirect('/nz');
 });
 
 app.get('/:name', (req, res, next) => {
-	res.render(config.templatesFolder + 'article.twig', {article_html_file: req.params.name + '.html'});
+	res.render(config.templatesFolder + 'post.twig', {post_html_file: req.params.name + '.html'});
 });
 
 
@@ -75,7 +75,7 @@ if(process.env.NODE_ENV == 'test')
 	module.exports = app;
 else {
 	(async () => {
-		await convertArticles(config.markdownFolder, config.articlesFolder);
+		await convertPosts(config.markdownFolder, config.postsFolder);
 
 		app.use('/static', express.static(config.staticFolder));
 
@@ -84,28 +84,28 @@ else {
 	})();
 }
 
-async function convertArticles(markdownFolder, htmlFolder) {
-	const articles = [];
+async function convertPosts(markdownFolder, htmlFolder) {
+	const posts = [];
 	const files = await readDir(markdownFolder);
 	files.forEach(async (fileName) => {
 		if(path.extname(fileName) != '.md')
 			return;
 		let fileContent = (await readFile(markdownFolder + fileName)).toString();
-		//const header = extractHeaderFromArticle(fileContent, fileName);
-		//articles.push(header.article);
+		//const header = extractHeaderFromPost(fileContent, fileName);
+		//posts.push(header.post);
 		//fileContent = fileContent.substring(header.length).trim();
 		let html = new showdown.Converter({extensions: ['gallery']}).makeHtml(fileContent);
 		//html = insertGalleryDivs(html);
 		await writeFile(htmlFolder + fileName.replace('.md', '.html'), html);
 	});
-	return articles;
+	return posts;
 }
 
-function extractHeaderFromArticle(fileContent, fileName) {
+function extractHeaderFromPost(fileContent, fileName) {
 	const result = fileContent.match(/(^[\S\s]+)~~~/);
 	let header = result && result[1];
 	header = header.trim();
 	header = header ? JSON.parse(header) : {};
 	header.slugUrl = fileName.replace('.md', '');
-	return {article: header, length: result[0].length};
+	return {post: header, length: result[0].length};
 }
