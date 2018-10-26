@@ -46,7 +46,7 @@ if(process.env.NODE_ENV == 'test')
 	module.exports = app;
 else {
 	(async () => {
-		gallery.load(config.picturesFolderUrl);
+		gallery.load(config.picturesFolderUrl, config.pictureWidths);
 		await convertPosts(config.markdownFolder, config.postsFolder);
 
 		app.use('/static', express.static(config.staticFolder));

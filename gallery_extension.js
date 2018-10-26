@@ -1,7 +1,7 @@
 const showdown = require('showdown');
 
 module.exports = {
-    load: (picturesFolderUrl) => {
+    load: (picturesFolderUrl, pictureWidths) => {
         showdown.extension('gallery', () => {
             return [
                 { 
@@ -16,12 +16,15 @@ module.exports = {
                     type: 'output',
                     regex: /<img src="([^ ]+)".+>/gi,
                     replace: function(s, url) {
+                        let data = '';
                         if(url.match(/^[^\/]+(.jpg|.jpeg|.png)/)) { // only the filename is provided
                             url = picturesFolderUrl + url;
-                            s = s.replace(/src="[^ ]+"/, 'src="' + url.replace('.jpg', '.thumbnail.jpg') + '"');
+                            s = s.replace(/src="[^ ]+"/, 'src="' + url.replace('.jpg', '-thumbnail.jpg') + '"');
+                            for(let width of pictureWidths)
+                                data += url.replace('.jpg', '-' + width + '.jpg') + ' ' + width + ', ';
                         }
-                        //return '<a href="' + url + '">' + s + '</a>'; // old fashion
-                        return '<div class="item" data-src="' + url + '">' + s + '</div>'
+                        //return '<a href="' + url + '" data-responsive="' + data + '">' + s + '</a>'; // old fashion
+                        return '<div class="item" data-src="' + url + '" data-responsive="' + data + '">' + s + '</div>'
                     }
                 },
                 {

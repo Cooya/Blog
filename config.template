@@ -4,5 +4,7 @@ module.exports = {
     markdownFolder: __dirname + '/markdown/', 
     postsFolder: __dirname + '/ui/posts/',
     templatesFolder: __dirname + '/ui/templates/',
-    staticFolder: __dirname + '/ui/static/'
+    staticFolder: __dirname + '/ui/static/',
+    picturesFolderUrl: 'http://localhost:8080/static/pictures/',
+    pictureWidths: [300, 600, 1200, 2400]
 }

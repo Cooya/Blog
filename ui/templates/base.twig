@@ -11,9 +11,10 @@
 
     <style>
         .wallpaper {
-            background: url(/static/pictures/nz1.jpg) fixed no-repeat;
+            background: url(/static/pictures/nz1-300.jpg) fixed no-repeat;
             background-size: cover;
             background-position-y: 50%;
+            transition: background 0.5s ease;
             position: fixed;
             width: 100%;
             height: 100%;
@@ -43,7 +44,9 @@
 <!-- <body style="background-color: black; color: lemonchiffon"> -->
 <body style="background-color: ghostwhite;">
 
-<div class="wallpaper">
+<div class="wallpaper async-image" data-responsive="/static/pictures/nz1-300.jpg 300, /static/pictures/nz1-600.jpg 600, 
+static/pictures/nz1-1200.jpg 1200, static/pictures/nz1-1800.jpg 1800, static/pictures/nz1-2400.jpg 2400, static/pictures/nz1.jpg">
+<img style="display: none;" src="/static/pictures/nz1-300.jpg"/>
 </div>
 
 <div class="header-title">
@@ -74,12 +77,45 @@
   </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script> -->
+<script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/lightgallery-all.min.js"></script>
 
 <script>
     $(document).ready(function() {
-        $('.lightgallery').lightGallery();
+        $('.lightgallery').lightGallery({
+            preload: 3 // load 3 ajacent pictures for each direction
+        });
+
+        const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        const objects = document.getElementsByClassName('async-image');
+        Array.from(objects).map((item) => {
+            var dataResponsive = item.dataset.responsive;
+            if(!dataResponsive) {
+                console.error('An async image must have a "data-responsive" attribute.');
+                return;
+            }
+            var pictures = dataResponsive.split(',');
+            var selectedPictureUrl = null;
+            for(var i = 0; i < pictures.length; ++i) {
+                var urlAndBreakpoint = pictures[i].trim().split(' ');
+                if(urlAndBreakpoint.length == 1 || Number.parseInt(urlAndBreakpoint[1]) > viewportWidth) {
+                    selectedPictureUrl = urlAndBreakpoint[0];
+                    break;
+                }
+            }
+
+            // Start loading image
+            const img = new Image();
+            img.src = selectedPictureUrl;
+            console.log('Loading picture "' + img.src + '"...');
+            
+            // Once image is loaded replace the src of the HTML element
+            img.onload = () => {
+                item.classList.remove('async-image');
+                return item.nodeName === 'IMG' ? item.src = img.src : item.style.backgroundImage = `url(${img.src})`;
+            };
+        });
     });
 </script>
 </body>
