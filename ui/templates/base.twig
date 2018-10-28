@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <title>Blog</title>
     <link rel='stylesheet' href="/static/css/bulma.min.css">
-    <link rel="stylesheet" href="/static/css/cards.css">
     <link rel="stylesheet" href="/static/css/fontawesome.min.css">
     <link rel="stylesheet" href="https://sachinchoolur.github.io/lightGallery/lightgallery/css/lightgallery.css">
 
@@ -38,23 +37,26 @@
             width: 100%;
             object-fit: cover;
         }
+
+        .footer {
+            background-color: #222831;
+            color: lemonchiffon;
+        }
+        .footer p, strong {color: lemonchiffon}
+        .footer a:hover {color: crimson;}
     </style>
 </head>
 
-<!-- <body style="background-color: black; color: lemonchiffon"> -->
-<body style="background-color: ghostwhite;">
+<body style="background-color: ghostwhite">
 
-<div class="wallpaper async-image" data-responsive="/static/pictures/nz1-300.jpg 300, /static/pictures/nz1-600.jpg 600, 
-static/pictures/nz1-1200.jpg 1200, static/pictures/nz1-2400.jpg 2400, static/pictures/nz1.jpg">
-<img style="display: none;" src="/static/pictures/nz1-300.jpg"/>
-</div>
+{% block wallpaper %}{% endblock %}
 
 <div class="header-title">
     <section class="hero is-medium has-text-centered">
         <div class="hero-body">
             <div class="container">
-                <h1 class="title is-1">Nouvelle-Zélande</h1>
-                <h3 class="subtitle is-3">Carnet de notes</h3>
+                <h1 class="title is-1">{{ title }}</h1>
+                <h3 class="subtitle is-3">{{ subtitle }}</h3>
             </div>
         </div>
     </section>

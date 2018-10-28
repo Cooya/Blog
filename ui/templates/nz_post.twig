@@ -1,0 +1,31 @@
+{% extends "./base.twig" %}
+
+{% block wallpaper %}
+
+<div class="wallpaper async-image" data-responsive="/static/pictures/nz1-300.jpg 300, /static/pictures/nz1-600.jpg 600, 
+static/pictures/nz1-1200.jpg 1200, static/pictures/nz1-2400.jpg 2400, static/pictures/nz1.jpg">
+    <img style="display: none;" src="/static/pictures/nz1-300.jpg"/>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="main-content">
+    <div class="container is-widescreen">
+        <div class="columns is-centered is-multiline">
+            <div class="column is-8">
+                <div class="post">
+                    <div class="content">
+                        {% include html_file %}
+                    </div>
+                </div>
+                <!-- <nav class="has-text-right">
+                    <a class="button" href="index.html">Back to Home</a>
+                </nav> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
