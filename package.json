@@ -4,9 +4,9 @@
   "description": "Very famous Coya's blog",
   "main": "server.js",
   "scripts": {
-    "start": "NODE_ENV=development node server.js",
-    "dev": "NODE_ENV=development nodemon -e js,twig,md server.js",
-    "prod": "NODE_ENV=production forever start server.js"
+    "start": "NODE_ENV=development node src/server.js",
+    "dev": "NODE_ENV=development nodemon -e js,twig,md src/server.js",
+    "prod": "NODE_ENV=production forever start src/server.js"
   },
   "author": "Coya",
   "license": "ISC",
