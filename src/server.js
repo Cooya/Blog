@@ -22,7 +22,7 @@ if(config.sentryEndpoint)
 
 // create the express app
 const app = express();
-twig.cache(process.env.NODE_ENV == 'production');
+twig.cache(false); // enable the cache prevents refreshing when templates are modified...
 app.set('views', config.postsFolder);
 
 // define the server routes
