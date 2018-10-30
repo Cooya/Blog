@@ -34,7 +34,7 @@ app.get('/:name', async (req, res, next) => {
 	if(!post)
 		return res.send('Comme tu peux voir, il n\'y a rien ici...')
 	
-	res.render(config.templatesFolder + post.post_template + '_post.twig', post);
+	res.render(config.templatesFolder + post.post_template + '.twig', post);
 });
 
 if(process.env.NODE_ENV == 'test')
