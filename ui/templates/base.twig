@@ -11,6 +11,17 @@
     {% endif %}
 
     <style>
+        body {
+            background-color: ghostwhite;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
         .wallpaper {
             background: url(/static/pictures/nz1-300.jpg) fixed no-repeat;
             background-size: cover;
@@ -43,13 +54,16 @@
         .footer {
             background-color: #222831;
             color: lemonchiffon;
+            background-color: black;
+            margin-top: 50px;
+            padding: 50px;
         }
         .footer p, .footer p strong {color: lemonchiffon}
         .footer a:hover {color: crimson;}
     </style>
 </head>
 
-<body style="background-color: ghostwhite">
+<body>
 
 {% block wallpaper %}{% endblock %}
 
@@ -66,11 +80,11 @@
 
 {% block content %}{% endblock %}
 
-<footer class="footer" style="background-color: black; margin-top: 50px; padding: 50px;">
+<footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
       <p>
-        Page construite avec l'aide du <strong>framework CSS</strong> <a href="https://bulma.io/">Bulma</a>, 
+        Site web construit avec l'aide du <strong>framework CSS</strong> <a href="https://bulma.io/">Bulma</a>, 
         du <strong>plugin JS</strong> <a href="https://sachinchoolur.github.io/lightGallery/">lightGallery</a> 
         et du <strong>markdown converter</strong> <a href="http://showdownjs.com/">Showdown</a>.
       </p>
