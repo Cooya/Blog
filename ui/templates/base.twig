@@ -22,6 +22,10 @@
             flex: 1;
         }
 
+        .columns.is-mobile > .column.is-two-thirds { /* fix for mobile display */
+            width: 83.33333%;
+        }
+
         .wallpaper {
             background-repeat: no-repeat;   
             background-size: cover;
@@ -34,16 +38,13 @@
         }
 
         .lightgallery {
-            text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 50px !important;
         }
 
         .lightgallery .item {
-            width: 33%;
             height: 200px;
-            overflow: hidden;
-            display: inline-block;
             cursor: pointer;
+            padding: var(--columnGap);
         }
 
         .lightgallery .item img {
@@ -61,6 +62,12 @@
         }
         .footer p, .footer p strong {color: lemonchiffon}
         .footer a:hover {color: crimson;}
+
+        #backbutton {
+            position: fixed;
+            bottom: 10px;
+            right: 10px; 
+        }
     </style>
 </head>
 
@@ -109,6 +116,12 @@
     </div>
   </div>
 </footer>
+
+{% if back_button_url is defined and back_button_url|length > 0 %}
+    <nav class="has-text-right" id="backbutton">
+        <a class="button" href="{{ back_button_url }}">Retour</a>
+    </nav>
+{% endif %}
 
 {% if enable_gallery == true %}
     <script src="/static/js/jquery.min.js"></script>
