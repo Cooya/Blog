@@ -30,10 +30,7 @@ app.get('/', (req, res, next) => {
 	res.redirect('/nz');
 });
 app.get('/:postId([a-z0-9\/\-]+)', async (req, res, next) => {
-	//console.debug(req.params.postId);
-	
 	const post = await converter.getPost(req.params.postId);
-	//console.debug(post);
 	if(!post)
 		return res.send('Comme tu peux voir, il n\'y a rien ici...');
 	

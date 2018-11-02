@@ -20,6 +20,8 @@ module.exports = class Converter {
     }
 
     async getPost(postId) {
+        //console.debug(postId);
+
         // get the post object
         const post = this.posts[postId];
         if (!post)
@@ -30,7 +32,7 @@ module.exports = class Converter {
         const lastModificationDate = await getFileLastModificationDate(post.markdown_file_path);
         //console.debug(lastModificationDate, post.last_modification_date);
         if (lastModificationDate.getTime() != post.last_modification_date.getTime())
-            await convertFile.call(this, postId + '.md'); // refresh the html file
+            await convertFile.call(this, path.dirname(post.markdown_file_path), path.basename(post.markdown_file_path)); // refresh the html file
 
         return post;
     }
@@ -41,6 +43,8 @@ module.exports = class Converter {
 };
 
 async function convertFile(srcFolder, fileName) {
+    console.log('Converting file...');
+    
     const relativeFolderPath = path.relative(this.srcMarkdownFolder, srcFolder);
     const filePath = path.resolve(srcFolder, fileName);
     let fileContent;
