@@ -36,7 +36,7 @@ module.exports = class Converter {
     }
 
     async convertFiles(srcFolder = this.srcMarkdownFolder) {
-        asyncForEach(await readDir(srcFolder), convertFile.bind(this, srcFolder));
+        await asyncForEach(await readDir(srcFolder), convertFile.bind(this, srcFolder));
     }
 };
 
@@ -136,7 +136,7 @@ async function buildIndex(srcFolder) {
     const relativePath = path.relative(this.srcMarkdownFolder, srcFolder);
     const files = await readDir(srcFolder);
     let index = '# Me\n';
-    asyncForEach(files, async (fileName) => {
+    files.forEach((fileName) => {
         if (path.extname(fileName) != '.md')
             return;
         index += `[${fileName.replace('.md', '')}](${relativePath + '/' + fileName.replace('.md', '')})  \n`;
