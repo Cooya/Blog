@@ -5,10 +5,12 @@ const util = require('util');
 
 const gallery = require('./gallery_extension');
 
+const fileExists = util.promisify(fs.exists);
+const fileStat = util.promisify(fs.stat);
+const mkdir = util.promisify(fs.mkdir);
 const readDir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
-const fileStat = util.promisify(fs.stat);
 
 module.exports = class Converter {
     constructor(srcMarkdownFolder, destHtmlFolder) {
@@ -33,22 +35,41 @@ module.exports = class Converter {
         return post;
     }
 
-    async convertFiles() {
-        (await readDir(this.srcMarkdownFolder)).forEach(convertFile.bind(this));
+    async convertFiles(srcFolder = this.srcMarkdownFolder) {
+        (await readDir(srcFolder)).forEach(await convertFile.bind(this, srcFolder));
     }
 };
 
-async function convertFile(fileName) {
-    if (path.extname(fileName) != '.md')
+async function convertFile(srcFolder, fileName) {
+    const relativeFolderPath = path.relative(this.srcMarkdownFolder, srcFolder);
+    const filePath = path.resolve(srcFolder, fileName);
+    let fileContent;
+    let index = false;
+
+    if(fileName == 'index') {
+        fileContent = await buildIndex.call(this, srcFolder);
+        index = true;
+        //console.debug(fileContent);
+    }
+    else if(fileName == 'index.md')
+        index = true;
+    else if (path.extname(fileName) != '.md') {
+        if((await fileStat(filePath)).isDirectory())
+            await this.convertFiles(filePath);
         return;
-    console.debug('Converting file "' + fileName + '"...');
+    }
+    //console.debug('Converting file "' + fileName + '"...');
 
     // we create a new post object
-    const postId = fileName.replace('.md', '');
-    const post = { markdown_file_path: this.srcMarkdownFolder + fileName };
+    const postId = determinePostId(relativeFolderPath, fileName);
+    const post = {
+        markdown_file_path: filePath,
+        html_file: index ? postId + '/index.html' : postId + '.html'
+    };
 
     // we read the file, extract its header and save it into the post object
-    let fileContent = (await readFile(post.markdown_file_path)).toString();
+    if(!fileContent)
+        fileContent = (await readFile(post.markdown_file_path)).toString();
     const postDataAndContent = extractHeaderFromPost(fileContent);
     if (postDataAndContent.header) {
         fileContent = postDataAndContent.content; // file content whithout header
@@ -58,19 +79,20 @@ async function convertFile(fileName) {
     post.last_modification_date = await getFileLastModificationDate(post.markdown_file_path);
 
     // and we convert the markdown file to an html file
-    const destHtmlFileName = postId + '.html';
     const html = createConverter(post).makeHtml(fileContent);
-    await writeFile(this.destHtmlFolder + destHtmlFileName, html);
-    post.html_file = destHtmlFileName;
+    const destHtmlFilePath = path.resolve(this.destHtmlFolder, post.html_file);
+    await ensureDirectoryExistence(destHtmlFilePath);
+    await writeFile(destHtmlFilePath, html);
 
     // save the new post into the posts container
     this.posts[postId] = post;
+    console.debug(filePath, '->', destHtmlFilePath);
 }
 
 function extractHeaderFromPost(postContent) {
     let header = postContent.match(/{(.|\n)+}\n\n/);
     if (!header || !header[0]) {
-        console.warn('No header found.');
+        //console.warn('No header found.');
         return {};
     }
 
@@ -108,4 +130,32 @@ function createConverter(postData) {
     }
 
     return new showdown.Converter(options);
+}
+
+async function buildIndex(srcFolder) {
+    const relativePath = path.relative(this.srcMarkdownFolder, srcFolder);
+    const files = await readDir(srcFolder);
+    let index = '# Me\n';
+    files.forEach(async (fileName) => {
+        if (path.extname(fileName) != '.md')
+            return;
+        index += `[${fileName.replace('.md', '')}](${relativePath + '/' + fileName.replace('.md', '')})  \n`;
+    });
+    return index;
+}
+
+async function ensureDirectoryExistence(filePath) {
+    const dirname = path.dirname(filePath);
+    if(!(await fileExists(dirname))) {
+        ensureDirectoryExistence(dirname);
+        await mkdir(dirname);
+    }
+}
+
+function determinePostId(relativeFolderPath, fileName) {
+    if(fileName == 'index' || fileName == 'index.md')
+        return relativeFolderPath || '/';
+    if(relativeFolderPath)
+        return relativeFolderPath + '/' + fileName.replace('.md', '');
+    return fileName.replace('.md', '');
 }
