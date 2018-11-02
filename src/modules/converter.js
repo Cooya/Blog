@@ -36,7 +36,7 @@ module.exports = class Converter {
     }
 
     async convertFiles(srcFolder = this.srcMarkdownFolder) {
-        (await readDir(srcFolder)).forEach(await convertFile.bind(this, srcFolder));
+        asyncForEach(await readDir(srcFolder), convertFile.bind(this, srcFolder));
     }
 };
 
@@ -136,7 +136,7 @@ async function buildIndex(srcFolder) {
     const relativePath = path.relative(this.srcMarkdownFolder, srcFolder);
     const files = await readDir(srcFolder);
     let index = '# Me\n';
-    files.forEach(async (fileName) => {
+    asyncForEach(files, async (fileName) => {
         if (path.extname(fileName) != '.md')
             return;
         index += `[${fileName.replace('.md', '')}](${relativePath + '/' + fileName.replace('.md', '')})  \n`;
@@ -158,4 +158,9 @@ function determinePostId(relativeFolderPath, fileName) {
     if(relativeFolderPath)
         return relativeFolderPath + '/' + fileName.replace('.md', '');
     return fileName.replace('.md', '');
+}
+
+async function asyncForEach(array, callback) {
+	for (let i = 0; i < array.length; i++)
+		await callback(array[i], i, array);
 }
