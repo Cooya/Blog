@@ -89,16 +89,18 @@
     </div>
 {% endif %}
 
-<div class="header-title">
-    <section class="hero is-medium has-text-centered">
-        <div class="hero-body">
-            <div class="container">
-                <h1 class="title is-1">{{ title }}</h1>
-                <h3 class="subtitle is-3">{{ subtitle }}</h3>
+{% if title is defined and title|length > 0 %}
+    <div class="header-title">
+        <section class="hero is-medium has-text-centered">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title is-1">{{ title }}</h1>
+                    <h3 class="subtitle is-3">{{ subtitle }}</h3>
+                </div>
             </div>
-        </div>
-    </section>
-</div>
+        </section>
+    </div>
+{% endif %}
 
 {% block content %}{% endblock %}
 
