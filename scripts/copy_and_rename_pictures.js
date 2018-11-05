@@ -11,20 +11,21 @@ const readDir = util.promisify(fs.readdir);
 		let srcFolder = process.argv[2];
 		let destFolder = process.argv[3];
 		let picturesName = process.argv[4];
+		let commit = process.argv[5] == '--commit';
 
-		if(!srcFolder || !destFolder) {
-			console.log('Usage: node scripts/copy_and_rename_pictures srcFolder destFolder [picturesName]');
+		if(!srcFolder || !destFolder || !picturesName) {
+			console.log('Usage: node scripts/copy_and_rename_pictures srcFolder destFolder picturesName [--commit]');
 			return;
 		}
 
-		await copyPictures(srcFolder, destFolder, picturesName);
+		await copyPictures(srcFolder, destFolder, picturesName, commit);
 	}
 	catch (e) {
 		console.error(e);
 	}
 })();
 
-async function copyPictures(srcFolder, destFolder, picturesName = 'img') {
+async function copyPictures(srcFolder, destFolder, picturesName, commit = false) {
 	const files = await readDir(srcFolder);
 	let i = 1;
 	await asyncForEach(files, async (fileName) => {
@@ -38,7 +39,8 @@ async function copyPictures(srcFolder, destFolder, picturesName = 'img') {
 		while (await fileExists(destFile))
 			destFile = path.resolve(destFolder, picturesName + (i++) + extension)
 
-		await copyFile(path.resolve(srcFolder, fileName), destFile);
+		if(commit)
+			await copyFile(path.resolve(srcFolder, fileName), destFile);
 		console.log('Picture "' + fileName + '" copied successfully as "' + path.basename(destFile) + '".');
 	});
 }

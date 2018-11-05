@@ -43,11 +43,11 @@ async function resizePictures(srcFolder, widths, commit = false) {
 			image = sharp(originalFile);
 			metadata = await image.metadata();	
 			if(width == 'thumbnail')
-				data = await image.resize({width: Math.round(metadata.width * 0.1), height: metadata.height * 0.1}).toBuffer();
+				data = await image.rotate().resize({width: Math.round(metadata.width * 0.1), height: metadata.height * 0.1}).toBuffer();
 			if(metadata.width < width)
 				data = await image.toBuffer();
 			else
-				data = await image.resize({width: width, height: metadata.height * (width / metadata.width)}).toBuffer();
+				data = await image.rotate().resize({width: width, height: metadata.height * (width / metadata.width)}).toBuffer();
 			destFile = path.resolve(srcFolder, fileName.replace(extension, '') + '-' + width + extension);
 			if(commit)
 				await writeFile(destFile, data);
