@@ -4,6 +4,7 @@ const showdown = require('showdown');
 const util = require('util');
 
 const gallery = require('./gallery_extension');
+const tooltip = require('./tooltip_extension');
 
 const fileExists = util.promisify(fs.exists);
 const fileStat = util.promisify(fs.stat);
@@ -119,19 +120,22 @@ async function getFileLastModificationDate(filePath) {
     return stat.mtime;
 }
 
-function createConverter(postData) {
+function createConverter(settings) {
     let options = {
-        strikethrough: true
+        strikethrough: true,
+        extensions: []
     };
 
-    if (postData.enable_gallery) {
-        if (!postData.pictures_folder_url)
+    if (settings.enable_gallery) {
+        if (!settings.pictures_folder_url)
             throw Error('If gallery enabled, the attribute "pictures_folder_url" must be specified.');
-        if (!postData.picture_widths)
+        if (!settings.picture_widths)
             throw Error('If gallery enabled, the attribute "picture_widths" must be specified.');
 
-        options.extensions = [gallery(postData.pictures_folder_url, postData.picture_widths)];
+        options.extensions.push(gallery(settings.pictures_folder_url, settings.picture_widths));
     }
+    if(settings.enable_tooltip)
+        options.extensions.push(tooltip());
 
     return new showdown.Converter(options);
 }
