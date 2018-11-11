@@ -4,8 +4,9 @@ const util = require('util');
 
 const sharp = require('sharp');
 
-const writeFile = util.promisify(fs.writeFile);
+const fileExists = util.promisify(fs.exists);
 const readDir = util.promisify(fs.readdir);
+const writeFile = util.promisify(fs.writeFile);
 
 (async () => {
 	try {
@@ -30,7 +31,7 @@ async function resizePictures(srcFolder, widths, commit = false) {
 	await asyncForEach(files, async (fileName) => {
 		let extension = path.extname(fileName);
 		if (['.jpg', '.jpeg', '.png'].indexOf(extension) == -1 || fileName.match(/-([0-9]{3,4}|thumbnail)\./)) {
-			console.warn('File "' + fileName + '" ignored.');
+			//console.warn('File "' + fileName + '" ignored.');
 			return;
 		}
 
@@ -39,7 +40,17 @@ async function resizePictures(srcFolder, widths, commit = false) {
 		let metadata;
 		let data
 		let destFile;
+		let newFileName;
 		for(let width of widths) {
+			// determine new file and check if it already exists or not
+			newFileName = fileName.replace(extension, '') + '-' + width + extension;
+			destFile = path.resolve(srcFolder, newFileName);
+			if(await fileExists(destFile)) {
+				//console.log('File ' + newFileName + ' already exists.');
+				continue;
+			}
+
+			// rotate and resize the image
 			image = sharp(originalFile);
 			metadata = await image.metadata();	
 			if(width == 'thumbnail')
@@ -48,7 +59,8 @@ async function resizePictures(srcFolder, widths, commit = false) {
 				data = await image.toBuffer();
 			else
 				data = await image.rotate().resize({width: width, height: metadata.height * (width / metadata.width)}).toBuffer();
-			destFile = path.resolve(srcFolder, fileName.replace(extension, '') + '-' + width + extension);
+
+			// create the file if commit is specified
 			if(commit)
 				await writeFile(destFile, data);
 			console.log('File ' + destFile + ' created successfully.');
