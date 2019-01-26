@@ -12,7 +12,7 @@ const mkdir = util.promisify(fs.mkdir);
 const readDir = util.promisify(fs.readdir);
 const writeFile = util.promisify(fs.writeFile);
 
-const PICTURE_WIDTHS = ['thumbnail', 300, 600, 1200, 2400];
+const config = require('../config');
 
 (async () => {
 	try {
@@ -42,7 +42,7 @@ const PICTURE_WIDTHS = ['thumbnail', 300, 600, 1200, 2400];
 		}
 
 		await copyPictures(srcFolder, destFolder, picturesName, index, commit);
-		await resizePictures(!commit ? srcFolder : destFolder, PICTURE_WIDTHS, commit);
+		await resizePictures(!commit ? srcFolder : destFolder, config.pictureWidths, commit);
 	} catch (e) {
 		console.error(e);
 	}

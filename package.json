@@ -9,7 +9,8 @@
 		"prod": "NODE_ENV=production forever start src/server.js"
 	},
 	"bin": {
-		"import-pics": "./scripts/import_pics.js"
+		"import-pics": "./scripts/import_pics.js",
+		"gen-md": "./scripts/gen_md.js"
 	},
 	"author": "Coya",
 	"license": "ISC",
