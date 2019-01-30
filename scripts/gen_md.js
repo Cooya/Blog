@@ -16,8 +16,8 @@ const header =
 	"pictures_folder_url": "/static/pictures/",\n\
 	"picture_widths": [300, 600, 1200, 2400],\n\
 	"wallpaper_picture": "",\n\
-	"enable_gallery": true,\n\
-	"back_button_url": "/"\n\
+	"back_button_url": "/",\n\
+	"extensions": []\n\
 }\n\n';
 
 (async () => {

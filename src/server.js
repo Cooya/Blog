@@ -3,20 +3,20 @@ const Raven = require('raven');
 const twig = require('twig');
 
 const config = require('../config');
-const converter = new (require('./modules/converter'))(config.markdownFolder, config.postsFolder);
+const converter = new (require('./converter'))(config.markdownFolder, config.postsFolder);
 
-process.on('uncaughtException', (e) => {
+process.on('uncaughtException', e => {
 	console.error(e);
 });
-process.on('unhandledRejection', (e) => {
+process.on('unhandledRejection', e => {
 	console.error(e);
 });
 
 // configure Raven to report error if Sentry endpoint is specified
-if(config.sentryEndpoint)
+if (config.sentryEndpoint)
 	Raven.config(config.sentryEndpoint, {
-		shouldSendCallback: (data) => {
-			return process.env.NODE_ENV == 'production'
+		shouldSendCallback: data => {
+			return process.env.NODE_ENV == 'production';
 		}
 	}).install();
 
@@ -29,16 +29,15 @@ app.set('views', config.postsFolder);
 app.get('/', (req, res, next) => {
 	res.redirect('/nz');
 });
-app.get('/:postId([a-z0-9\/\-]+)', async (req, res, next) => {
+app.get('/:postId([a-z0-9/-]+)', async (req, res, next) => {
 	const post = await converter.getPost(req.params.postId);
-	if(!post)
-		return res.send('Comme tu peux voir, il n\'y a rien ici...');
-	
+	if (!post) return res.send("Comme tu peux voir, il n'y a rien ici...");
+
 	res.render(config.templatesFolder + 'post.twig', post);
 });
 
-if(process.env.NODE_ENV == 'test')
-	module.exports = app; // for unit tests, only the express app is required, no need to run the server
+if (process.env.NODE_ENV == 'test') module.exports = app;
+// for unit tests, only the express app is required, no need to run the server
 else {
 	(async () => {
 		// convert the markdown files into html files

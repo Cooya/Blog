@@ -2,215 +2,222 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <title>Blog</title>
-    <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- prevent favicon to be requested -->
-    <link rel='stylesheet' href="/static/css/bulma.min.css">
-    {% if enable_gallery == true %}
-        <link rel="stylesheet" href="https://sachinchoolur.github.io/lightGallery/lightgallery/css/lightgallery.css">
-    {% endif %}
+	<meta charset="utf-8">
+	<title>Blog</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- prevent favicon to be requested -->
+	<link rel='stylesheet' href="/static/css/bulma.min.css">
+	{% if 'gallery' in extensions %}
+		<link rel="stylesheet" href="https://sachinchoolur.github.io/lightGallery/lightgallery/css/lightgallery.css">
+	{% endif %}
 
-    <style>
-        body {
-            background-color: ghostwhite;
-            display: flex;
-            min-height: 100vh;
-            flex-direction: column;
-        }
+	{% if 'map' in extensions %}
+		<link rel="stylesheet" href="/static/css/leaflet.css">
+	{% endif %}
+	
+	<style>
+		body {
+			background-color: ghostwhite;
+			display: flex;
+			min-height: 100vh;
+			flex-direction: column;
+		}
 
-        .main-content {
-            flex: 1;
-        }
+		.main-content {
+			flex: 1;
+		}
 
-        .columns.is-mobile > .column.is-two-thirds { /* fix for mobile display */
-            width: 83.33333%;
-        }
+		.columns.is-mobile > .column.is-two-thirds { /* fix for mobile display */
+			width: 83.33333%;
+		}
 
-        .wallpaper {
-            background-repeat: no-repeat;   
-            background-size: cover;
-            background-position-y: 50%;
-            transition: background 0.5s ease;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            opacity: 0.3;
-        }
+		.wallpaper {
+			background-repeat: no-repeat;   
+			background-size: cover;
+			background-position-y: 50%;
+			transition: background 0.5s ease;
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			opacity: 0.3;
+		}
 
-        .lightgallery {
-            margin-bottom: 50px !important;
-        }
+		.lightgallery {
+			margin-bottom: 50px !important;
+		}
 
-        .lightgallery .item {
-            height: 200px;
-            cursor: pointer;
-            padding: var(--columnGap);
-        }
+		.lightgallery .item {
+			height: 200px;
+			cursor: pointer;
+			padding: var(--columnGap);
+		}
 
-        .lightgallery .item img {
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-        }
+		.lightgallery .item img {
+			height: 100%;
+			width: 100%;
+			object-fit: cover;
+		}
 
-        .footer {
-            background-color: #222831;
-            color: lemonchiffon;
-            background-color: black;
-            margin-top: 50px;
-            padding: 50px;
-        }
-        .footer p, .footer p strong {color: lemonchiffon}
-        .footer a:hover {color: crimson;}
+		.footer {
+			background-color: #222831;
+			color: lemonchiffon;
+			background-color: black;
+			margin-top: 50px;
+			padding: 50px;
+		}
+		.footer p, .footer p strong {color: lemonchiffon}
+		.footer a:hover {color: crimson;}
 
-        #backbutton {
-            position: fixed;
-            bottom: 10px;
-            right: 10px; 
-        }
+		#backbutton {
+			position: fixed;
+			bottom: 10px;
+			right: 10px; 
+		}
 
-        .tooltip {
-            position: relative;
-            display: inline;
-            border-bottom: 1px dotted black;
-        }
+		.tooltip {
+			position: relative;
+			display: inline;
+			border-bottom: 1px dotted black;
+		}
 
-        .tooltip > .tooltiptext {
-            visibility: hidden;
-            background-color: black;
-            color: #fff;
-            text-align: center;
-            padding: 5px 10px;
-            border-radius: 6px;
-            position: absolute;
-            z-index: 1;
-            font-size: 12px;
-            
-            width: 400px;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -200px; /* width / 2 */
-        }
+		.tooltip > .tooltiptext {
+			visibility: hidden;
+			background-color: black;
+			color: #fff;
+			text-align: center;
+			padding: 5px 10px;
+			border-radius: 6px;
+			position: absolute;
+			z-index: 1;
+			font-size: 12px;
+			
+			width: 400px;
+			bottom: 125%;
+			left: 50%;
+			margin-left: -200px; /* width / 2 */
+		}
 
-        .tooltip > .tooltiptext ul {
-            list-style: disc inside;
-            margin: 0;
-        }
+		.tooltip > .tooltiptext ul {
+			list-style: disc inside;
+			margin: 0;
+		}
 
-        .tooltip .tooltiptext::after {
-            content: " ";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: black transparent transparent transparent;
-        }
+		.tooltip .tooltiptext::after {
+			content: " ";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			margin-left: -5px;
+			border-width: 5px;
+			border-style: solid;
+			border-color: black transparent transparent transparent;
+		}
 
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-        }
-    </style>
+		.tooltip:hover .tooltiptext {
+			visibility: visible;
+		}
+	</style>
 </head>
 
 <body>
 
 {% if wallpaper_picture %}
-    {% set dataResponse = '' %}
-    {% set wallpaper_small_format = null %}
-    {% set first = true %}
-    {% for width in picture_widths %}
-        {% if first == true %}
-            {% set wallpaper_small_format = pictures_folder_url ~ wallpaper_picture|replace({'.jpg': '-' ~ width ~ '.jpg'}) %}
-            {% set first = false %}
-        {% endif %}
-        {% set dataResponse = dataResponse ~ pictures_folder_url ~ wallpaper_picture|replace({'.jpg': '-' ~ width ~ '.jpg'}) ~ ' ' ~ width ~ ', ' %}
-    {% endfor %}
-    <div class="wallpaper async-image" data-responsive="{{ dataResponse }}" style="background-image: url({{ wallpaper_small_format }})">
-        <img style="display: none;" src="{{ wallpaper_small_format }}"/>
-    </div>
+	{% set dataResponse = '' %}
+	{% set wallpaper_small_format = null %}
+	{% set first = true %}
+	{% for width in picture_widths %}
+		{% if first == true %}
+			{% set wallpaper_small_format = pictures_folder_url ~ wallpaper_picture|replace({'.jpg': '-' ~ width ~ '.jpg'}) %}
+			{% set first = false %}
+		{% endif %}
+		{% set dataResponse = dataResponse ~ pictures_folder_url ~ wallpaper_picture|replace({'.jpg': '-' ~ width ~ '.jpg'}) ~ ' ' ~ width ~ ', ' %}
+	{% endfor %}
+	<div class="wallpaper async-image" data-responsive="{{ dataResponse }}" style="background-image: url({{ wallpaper_small_format }})">
+		<img style="display: none;" src="{{ wallpaper_small_format }}"/>
+	</div>
 {% endif %}
 
 {% if title is defined and title|length > 0 %}
-    <div class="header-title">
-        <section class="hero is-medium has-text-centered">
-            <div class="hero-body">
-                <div class="container">
-                    <h1 class="title is-1">{{ title }}</h1>
-                    <h3 class="subtitle is-3">{{ subtitle }}</h3>
-                </div>
-            </div>
-        </section>
-    </div>
+	<div class="header-title">
+		<section class="hero is-medium has-text-centered">
+			<div class="hero-body">
+				<div class="container">
+					<h1 class="title is-1">{{ title }}</h1>
+					<h3 class="subtitle is-3">{{ subtitle }}</h3>
+				</div>
+			</div>
+		</section>
+	</div>
 {% endif %}
 
 {% block content %}{% endblock %}
 
 <footer class="footer">
   <div class="container">
-    <div class="content has-text-centered">
-      <p>
-        Site web construit avec l'aide du <strong>framework CSS</strong> <a href="https://bulma.io/">Bulma</a>, 
-        du <strong>plugin JS</strong> <a href="https://sachinchoolur.github.io/lightGallery/">lightGallery</a> 
-        et du <strong>markdown converter</strong> <a href="http://showdownjs.com/">Showdown</a>.
-      </p>
-      <p>
-        © cooya.fr, 2018. Tous droits réservés.
-      </p>
-    </div>
+	<div class="content has-text-centered">
+	  <p>
+		Site web construit avec l'aide du <strong>framework CSS</strong> <a href="https://bulma.io/">Bulma</a>, 
+		du <strong>plugin JS</strong> <a href="https://sachinchoolur.github.io/lightGallery/">lightGallery</a> 
+		et du <strong>markdown converter</strong> <a href="http://showdownjs.com/">Showdown</a>.
+	  </p>
+	  <p>
+		© cooya.fr, 2018. Tous droits réservés.
+	  </p>
+	</div>
   </div>
 </footer>
 
 {% if back_button_url is defined and back_button_url|length > 0 %}
-    <nav class="has-text-right" id="backbutton">
-        <a class="button" href="{{ back_button_url }}">Retour</a>
-    </nav>
+	<nav class="has-text-right" id="backbutton">
+		<a class="button" href="{{ back_button_url }}">Retour</a>
+	</nav>
 {% endif %}
 
-{% if enable_gallery == true %}
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/lightgallery-all.min.js"></script>
+{% if 'gallery' in extensions %}
+	<script src="/static/js/jquery.min.js"></script>
+	<script src="/static/js/lightgallery-all.min.js"></script>
+	<script src="/static/js/leaflet.min.js"></script>
+	<script src="/static/js/leaflet-swoopy.min.js"></script>
 {% endif %}
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        {% if enable_gallery == true %}
-            $('.lightgallery').lightGallery({
-                preload: 3 // load 3 ajacent pictures for each direction
-            });
-        {% endif %}
+	document.addEventListener('DOMContentLoaded', function() {
+		{% if 'gallery' in extensions %}
+			$('.lightgallery').lightGallery({
+				preload: 3 // load 3 ajacent pictures for each direction
+			});
+		{% endif %}
 
-        const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-        const objects = document.getElementsByClassName('async-image');
-        Array.from(objects).map((item) => {
-            var dataResponsive = item.dataset.responsive;
-            if(!dataResponsive) {
-                console.error('An async image must have a "data-responsive" attribute.');
-                return;
-            }
-            var pictures = dataResponsive.split(',');
-            var selectedPictureUrl = null;
-            for(var i = 0; i < pictures.length; ++i) {
-                var urlAndBreakpoint = pictures[i].trim().split(' ');
-                if(urlAndBreakpoint.length == 1 || Number.parseInt(urlAndBreakpoint[1]) > viewportWidth) {
-                    selectedPictureUrl = urlAndBreakpoint[0];
-                    break;
-                }
-            }
+		const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+		const objects = document.getElementsByClassName('async-image');
+		Array.from(objects).map((item) => {
+			var dataResponsive = item.dataset.responsive;
+			if(!dataResponsive) {
+				console.error('An async image must have a "data-responsive" attribute.');
+				return;
+			}
+			var pictures = dataResponsive.split(',');
+			var selectedPictureUrl = null;
+			for(var i = 0; i < pictures.length; ++i) {
+				var urlAndBreakpoint = pictures[i].trim().split(' ');
+				if(urlAndBreakpoint.length == 1 || Number.parseInt(urlAndBreakpoint[1]) > viewportWidth) {
+					selectedPictureUrl = urlAndBreakpoint[0];
+					break;
+				}
+			}
 
-            // Start loading image
-            const img = new Image();
-            img.src = selectedPictureUrl;
-            console.log('Loading picture "' + img.src + '"...');
-            
-            // Once image is loaded replace the src of the HTML element
-            img.onload = () => {
-                item.classList.remove('async-image');
-                return item.nodeName === 'IMG' ? item.src = img.src : item.style.backgroundImage = `url(${img.src})`;
-            };
-        });
-    });
+			// Start loading image
+			const img = new Image();
+			img.src = selectedPictureUrl;
+			console.log('Loading picture "' + img.src + '"...');
+			
+			// Once image is loaded replace the src of the HTML element
+			img.onload = () => {
+				item.classList.remove('async-image');
+				return item.nodeName === 'IMG' ? item.src = img.src : item.style.backgroundImage = `url(${img.src})`;
+			};
+		});
+	});
 </script>
+
 </body>
 </html>
