@@ -90,11 +90,12 @@ async function convertFile(srcFolder, fileName) {
 }
 
 function extractHeaderFromPost(postContent) {
-	let header = postContent.match(/{(.|\n)+}\n\n/);
+	let header = postContent.match(/{([^}]|\n)+}\n\n/);
 	if (!header || !header[0]) {
 		//console.warn('No header found.');
 		return {};
 	}
+	//console.debug(header[0]);
 
 	postContent = postContent.substr(header[0].length);
 
