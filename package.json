@@ -10,12 +10,13 @@
   },
   "bin": {
     "import-pics": "./scripts/import_pics.js",
-    "gen-md": "./scripts/gen_md.js"
+    "gen-post": "./scripts/gen_post.js"
   },
   "author": "Coya",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
+    "inquirer": "^6.2.1",
     "raven": "^2.6.2",
     "showdown": "^1.8.6",
     "twig": "^1.12.0"
