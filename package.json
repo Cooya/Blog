@@ -1,28 +1,32 @@
 {
-  "name": "coya-blog",
-  "version": "0.0.1",
-  "description": "Very famous Coya's blog",
-  "main": "server.js",
-  "scripts": {
-    "start": "NODE_ENV=development node src/server.js",
-    "dev": "NODE_ENV=development nodemon -e js,twig,md src/server.js",
-    "prod": "NODE_ENV=production forever start src/server.js"
-  },
-  "bin": {
-    "import-pics": "./scripts/import_pics.js",
-    "gen-post": "./scripts/gen_post.js"
-  },
-  "author": "Coya",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.16.3",
-    "inquirer": "^6.2.1",
-    "raven": "^2.6.2",
-    "showdown": "^1.8.6",
-    "twig": "^1.12.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.18.4",
-    "sharp": "^0.21.0"
-  }
+	"name": "coya-blog",
+	"version": "0.0.1",
+	"description": "Very famous Coya's blog",
+	"main": "server.js",
+	"scripts": {
+		"start": "NODE_ENV=development node src/server.js",
+		"dev": "NODE_ENV=development nodemon -e js,twig,md src/server.js",
+		"prod": "NODE_ENV=production forever start src/server.js"
+	},
+	"bin": {
+		"import-pics": "./scripts/import_pics.js",
+		"gen-post": "./scripts/gen_post.js"
+	},
+	"author": "Coya",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^4.16.3",
+		"inquirer": "^6.2.2",
+		"raven": "^2.6.2",
+		"showdown": "^1.8.6",
+		"twig": "^1.12.0"
+	},
+	"devDependencies": {
+		"nodemon": "^1.18.4",
+		"sharp": "^0.21.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Cooya/Blog.git"
+	}
 }

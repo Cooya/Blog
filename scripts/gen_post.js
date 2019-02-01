@@ -25,15 +25,9 @@ const picturesFolder = config.staticFolder + 'pictures/';
 		},
 		{
 			type: 'input',
-			name: 'header.pictures_folder_url',
-			message: 'Pictures folder URL ?',
-			default: '/static/pictures'
-		},
-		{
-			type: 'input',
 			name: 'header.picture_widths',
 			message: 'Picture widths ?',
-			default: '[300, 600, 1200, 2400]',
+			default: [300, 600, 1200, 2400],
 			validate: (val) => {
 				const arr = JSON.parse(val);
 				if (!Array.isArray(arr)) return 'This must be an array of numbers.';
@@ -91,6 +85,7 @@ const picturesFolder = config.staticFolder + 'pictures/';
 
 	try {
 		const answers = await inquirer.prompt(questions);
+		answers.header.pictures_folder_url = '/static/pictures/' + answers.pictures_folder_name + '/';
 		//console.debug(answers);
 
 		const picsFolder = picturesFolder + answers.pictures_folder_name;
