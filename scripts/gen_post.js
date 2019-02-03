@@ -9,7 +9,6 @@ const readDir = util.promisify(fs.readdir);
 const writeFile = util.promisify(fs.writeFile);
 
 const config = require('../config');
-const picturesFolder = config.staticFolder + 'pictures/';
 
 (async () => {
 	const questions = [
@@ -28,8 +27,8 @@ const picturesFolder = config.staticFolder + 'pictures/';
 			name: 'header.picture_widths',
 			message: 'Picture widths ?',
 			default: [300, 600, 1200, 2400],
-			validate: (val) => {
-				const arr = JSON.parse(val);
+			validate: (arr) => {
+				arr = !Array.isArray(arr) ? JSON.parse(arr) : arr;
 				if (!Array.isArray(arr)) return 'This must be an array of numbers.';
 				for (let arrVal of arr) {
 					if (!Number.isInteger(arrVal)) return 'This must be an array of numbers.';
@@ -58,7 +57,7 @@ const picturesFolder = config.staticFolder + 'pictures/';
 			type: 'list',
 			name: 'pictures_folder_name',
 			message: 'Pictures folder ?',
-			choices: (await readDir(picturesFolder)).filter((val) => {
+			choices: (await readDir(config.picturesFolder)).filter((val) => {
 				return val[0] != '.'; // ignore the ".gitignore" file
 			}),
 			validate: (val) => {
@@ -88,7 +87,7 @@ const picturesFolder = config.staticFolder + 'pictures/';
 		answers.header.pictures_folder_url = '/static/pictures/' + answers.pictures_folder_name + '/';
 		//console.debug(answers);
 
-		const picsFolder = picturesFolder + answers.pictures_folder_name;
+		const picsFolder = config.picturesFolder + answers.pictures_folder_name;
 		const mdDestFile = config.markdownFolder + answers.markdown_filename + '.md';
 		const header = JSON.stringify(answers.header, null, 4) + '\n\n';
 

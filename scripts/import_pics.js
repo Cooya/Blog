@@ -17,7 +17,7 @@ const config = require('../config');
 (async () => {
 	try {
 		let srcFolder = process.argv[2];
-		let destFolder = process.argv[3];
+		let picsFolderName = process.argv[3];
 		let picturesName = process.argv[4];
 		let index = 1;
 		let commit = false;
@@ -28,13 +28,12 @@ const config = require('../config');
 			else if (arg == '--commit') commit = true;
 		}
 
-		if (!srcFolder || !destFolder || !picturesName) {
-			console.log(
-				'Usage: import-pics <srcFolder> <destFolder> <picturesName> [--index NUMBER] [--commit]'
-			);
+		if (!srcFolder || !picsFolderName || !picturesName) {
+			console.log('Usage: import-pics <srcFolder> <picsFolderName> <picturesName> [--index NUMBER] [--commit]');
 			return;
 		}
 
+		const destFolder = config.picturesFolder + picsFolderName;
 		try {
 			await access(destFolder);
 		} catch (e) {
@@ -50,32 +49,26 @@ const config = require('../config');
 
 async function copyPictures(srcFolder, destFolder, picturesName, index = 1, commit = false) {
 	const files = await readDir(srcFolder);
-	await asyncForEach(files, async fileName => {
-		let extension = path.extname(fileName);
+	await asyncForEach(files, async (fileName) => {
+		let extension = path.extname(fileName).toLowerCase();
 		if (['.jpg', '.jpeg', '.png'].indexOf(extension) == -1) {
 			console.warn('File "' + fileName + '" ignored.');
 			return;
 		}
 
 		let destFile = path.resolve(destFolder, picturesName + index++ + extension);
-		while (await fileExists(destFile))
-			destFile = path.resolve(destFolder, picturesName + index++ + extension);
+		while (await fileExists(destFile)) destFile = path.resolve(destFolder, picturesName + index++ + extension);
 
 		if (commit) await copyFile(path.resolve(srcFolder, fileName), destFile);
-		console.log(
-			'Picture "' + fileName + '" copied successfully as "' + path.basename(destFile) + '".'
-		);
+		console.log('Picture "' + fileName + '" copied successfully as "' + path.basename(destFile) + '".');
 	});
 }
 
 async function resizePictures(srcFolder, widths, commit = false) {
 	const files = await readDir(srcFolder);
-	await asyncForEach(files, async fileName => {
+	await asyncForEach(files, async (fileName) => {
 		let extension = path.extname(fileName);
-		if (
-			['.jpg', '.jpeg', '.png'].indexOf(extension) == -1 ||
-			fileName.match(/-([0-9]{3,4}|thumbnail)\./)
-		) {
+		if (['.jpg', '.jpeg', '.png'].indexOf(extension) == -1 || fileName.match(/-([0-9]{3,4}|thumbnail)\./)) {
 			//console.warn('File "' + fileName + '" ignored.');
 			return;
 		}
@@ -110,7 +103,7 @@ async function resizePictures(srcFolder, widths, commit = false) {
 			else
 				data = await image
 					.rotate()
-					.resize({ width: width, height: metadata.height * (width / metadata.width) })
+					.resize({width: width, height: metadata.height * (width / metadata.width)})
 					.toBuffer();
 
 			// create the file if commit is specified
