@@ -41,5 +41,5 @@ async function asyncForEach(array, callback) {
 }
 
 function convertDate(date) {
-	return dateformat(new Date(date), 'dd-mm-yyyy HH:MM:ss', true);
+	return dateformat(new Date(date), 'yyyy-mm-dd HH:MM:ss', true);
 }
