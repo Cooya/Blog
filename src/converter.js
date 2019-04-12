@@ -1,4 +1,5 @@
 const fs = require('fs');
+const logger = require('@coya/logger')(require('../config').logging);
 const path = require('path');
 const showdown = require('showdown');
 const util = require('util');
@@ -22,16 +23,16 @@ module.exports = class Converter {
 	}
 
 	async getPost(postId) {
-		//console.debug(postId);
+		logger.debug(postId);
 
 		// get the post object
 		const post = this.posts[postId];
 		if (!post) return null;
-		//console.debug(post);
+		logger.debug(post);
 
 		// check the save modification date with the current file modification date
 		const lastModificationDate = await getFileLastModificationDate(post.markdown_file_path);
-		//console.debug(lastModificationDate, post.last_modification_date);
+		logger.debug(lastModificationDate, post.last_modification_date);
 		if (lastModificationDate.getTime() != post.last_modification_date.getTime())
 			await convertFile.call(this, path.dirname(post.markdown_file_path), path.basename(post.markdown_file_path)); // refresh the html file
 
@@ -44,7 +45,7 @@ module.exports = class Converter {
 };
 
 async function convertFile(srcFolder, fileName) {
-	console.log('Converting file...');
+	logger.info('Converting file...');
 
 	const relativeFolderPath = path.relative(this.srcMarkdownFolder, srcFolder);
 	const filePath = path.resolve(srcFolder, fileName);
@@ -54,13 +55,13 @@ async function convertFile(srcFolder, fileName) {
 	if (fileName == 'index') {
 		fileContent = await buildIndex.call(this, srcFolder);
 		index = true;
-		//console.debug(fileContent);
+		logger.debug(fileContent);
 	} else if (fileName == 'index.md') index = true;
 	else if (path.extname(fileName) != '.md') {
 		if ((await fileStat(filePath)).isDirectory()) await this.convertFiles(filePath);
 		return;
 	}
-	//console.debug('Converting file "' + fileName + '"...');
+	logger.debug('Converting file "' + fileName + '"...');
 
 	// we create a new post object
 	const postId = determinePostId(relativeFolderPath, fileName);
@@ -86,16 +87,16 @@ async function convertFile(srcFolder, fileName) {
 
 	// save the new post into the posts container
 	this.posts[postId] = post;
-	console.debug(filePath, '->', destHtmlFilePath);
+	logger.debug(filePath, '->', destHtmlFilePath);
 }
 
 function extractHeaderFromPost(postContent) {
 	let header = postContent.match(/{([^}]|\n)+}\n\n/);
 	if (!header || !header[0]) {
-		//console.warn('No header found.');
+		logger.warning('No header found.');
 		return {};
 	}
-	//console.debug(header[0]);
+	logger.debug(header[0]);
 
 	postContent = postContent.substr(header[0].length);
 
@@ -105,7 +106,7 @@ function extractHeaderFromPost(postContent) {
 			content: postContent
 		};
 	} catch (e) {
-		console.error('JSON parse error !');
+		logger.error('JSON parse error !');
 		return {};
 	}
 }

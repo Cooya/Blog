@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const logger = require('@coya/logger')(require('../config').logging);
 const path = require('path');
 const sharp = require('sharp');
 const util = require('util');
@@ -29,7 +30,7 @@ const config = require('../config');
 		}
 
 		if (!srcFolder || !picsFolderName || !picturesName) {
-			console.log('Usage: import-pics <srcFolder> <picsFolderName> <picturesName> [--index NUMBER] [--commit]');
+			logger.info('Usage: import-pics <srcFolder> <picsFolderName> <picturesName> [--index NUMBER] [--commit]');
 			return;
 		}
 
@@ -43,7 +44,7 @@ const config = require('../config');
 		await copyPictures(srcFolder, destFolder, picturesName, index, commit);
 		await resizePictures(!commit ? srcFolder : destFolder, config.pictureWidths, commit);
 	} catch (e) {
-		console.error(e);
+		logger.error(e);
 	}
 })();
 
@@ -52,7 +53,7 @@ async function copyPictures(srcFolder, destFolder, picturesName, index = 1, comm
 	await asyncForEach(files, async (fileName) => {
 		let extension = path.extname(fileName).toLowerCase();
 		if (['.jpg', '.jpeg', '.png'].indexOf(extension) == -1) {
-			console.warn('File "' + fileName + '" ignored.');
+			logger.warning('File "' + fileName + '" ignored.');
 			return;
 		}
 
@@ -60,7 +61,7 @@ async function copyPictures(srcFolder, destFolder, picturesName, index = 1, comm
 		while (await fileExists(destFile)) destFile = path.resolve(destFolder, picturesName + index++ + extension);
 
 		if (commit) await copyFile(path.resolve(srcFolder, fileName), destFile);
-		console.log('Picture "' + fileName + '" copied successfully as "' + path.basename(destFile) + '".');
+		logger.info('Picture "' + fileName + '" copied successfully as "' + path.basename(destFile) + '".');
 	});
 }
 
@@ -69,7 +70,7 @@ async function resizePictures(srcFolder, widths, commit = false) {
 	await asyncForEach(files, async (fileName) => {
 		let extension = path.extname(fileName);
 		if (['.jpg', '.jpeg', '.png'].indexOf(extension) == -1 || fileName.match(/-([0-9]{3,4}|thumbnail)\./)) {
-			//console.warn('File "' + fileName + '" ignored.');
+			logger.warning('File "' + fileName + '" ignored.');
 			return;
 		}
 
@@ -84,7 +85,7 @@ async function resizePictures(srcFolder, widths, commit = false) {
 			newFileName = fileName.replace(extension, '') + '-' + width + extension;
 			destFile = path.resolve(srcFolder, newFileName);
 			if (await fileExists(destFile)) {
-				//console.log('File ' + newFileName + ' already exists.');
+				logger.info('File ' + newFileName + ' already exists.');
 				continue;
 			}
 
@@ -108,7 +109,7 @@ async function resizePictures(srcFolder, widths, commit = false) {
 
 			// create the file if commit is specified
 			if (commit) await writeFile(destFile, data);
-			console.log('File ' + destFile + ' created successfully.');
+			logger.info('File ' + destFile + ' created successfully.');
 		}
 	});
 }

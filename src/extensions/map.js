@@ -15,12 +15,10 @@ module.exports = () => {
 				arr.push(val.match(/->/) ? true : false);
 				return arr;
 			});
-			//console.debug(latLong);
 
 			// parse the zoom parameter
 			let zoom = str.match(/\[zoom=([0-9]+)\]/);
 			zoom = zoom ? zoom[1] : DEFAULT_ZOOM;
-			//console.debug(zoom);
 
 			// compute the average lat/long to center the view
 			let avgLatLong = [0, 0];
@@ -30,7 +28,6 @@ module.exports = () => {
 			});
 			avgLatLong[0] /= latLong.length;
 			avgLatLong[1] /= latLong.length;
-			//console.debug(avgLatLong);
 
 			// build the output
 			let output = `<div id="map" style="height: 600px; margin-bottom: 50px"></div><script>
@@ -54,7 +51,6 @@ module.exports = () => {
 			output += `L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 				}).addTo(map);}</script>`;
-			//console.debug(output);
 			return output;
 		}
 	};

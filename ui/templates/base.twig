@@ -191,10 +191,8 @@
 		const objects = document.getElementsByClassName('async-image');
 		Array.from(objects).map((item) => {
 			var dataResponsive = item.dataset.responsive;
-			if(!dataResponsive) {
-				console.error('An async image must have a "data-responsive" attribute.');
+			if(!dataResponsive)
 				return;
-			}
 			var pictures = dataResponsive.split(',');
 			var selectedPictureUrl = null;
 			for(var i = 0; i < pictures.length; ++i) {
@@ -208,7 +206,6 @@
 			// Start loading image
 			const img = new Image();
 			img.src = selectedPictureUrl;
-			console.log('Loading picture "' + img.src + '"...');
 			
 			// Once image is loaded replace the src of the HTML element
 			img.onload = () => {

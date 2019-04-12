@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const inquirer = require('inquirer');
+const logger = require('@coya/logger')(require('../config').logging);
 const util = require('util');
 
 const access = util.promisify(fs.access);
@@ -85,7 +86,7 @@ const config = require('../config');
 	try {
 		const answers = await inquirer.prompt(questions);
 		answers.header.pictures_folder_url = '/static/pictures/' + answers.pictures_folder_name + '/';
-		//console.debug(answers);
+		logger.debug(answers);
 
 		const picsFolder = config.picturesFolder + answers.pictures_folder_name;
 		const mdDestFile = config.markdownFolder + answers.markdown_filename + '.md';
@@ -93,7 +94,7 @@ const config = require('../config');
 
 		try {
 			await access(mdDestFile);
-			console.error('The markdown file already exists.');
+			logger.error('The markdown file already exists.');
 			process.exit(0);
 		} catch (e) {}
 
@@ -108,7 +109,7 @@ const config = require('../config');
 
 		await writeMarkdown(picsFolder, mdDestFile, header, answers.commit);
 	} catch (e) {
-		console.error(e);
+		logger.error(e);
 	}
 })();
 
@@ -121,8 +122,8 @@ async function writeMarkdown(picsFolder, destFile, header, commit = false) {
 		for (let picWidth of config.pictureWidths) if (fileName.indexOf('-' + picWidth) != -1) return;
 		picturesList += '![](' + fileName + ')\n';
 	});
-	console.log(header + picturesList);
-	console.log('Destination : ' + destFile);
+	logger.info(header + picturesList);
+	logger.info('Destination : ' + destFile);
 	if (commit) writeFile(destFile, header + picturesList);
 }
 

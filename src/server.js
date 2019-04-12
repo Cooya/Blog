@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('@coya/logger')(require('../config').logging);
 const Raven = require('raven');
 const twig = require('twig');
 
@@ -6,10 +7,10 @@ const config = require('../config');
 const converter = new (require('./converter'))(config.markdownFolder, config.postsFolder);
 
 process.on('uncaughtException', e => {
-	console.error(e);
+	logger.error(e);
 });
 process.on('unhandledRejection', e => {
-	console.error(e);
+	logger.error(e);
 });
 
 // configure Raven to report error if Sentry endpoint is specified
@@ -47,7 +48,7 @@ else {
 		app.use('/static', express.static(config.staticFolder));
 
 		// run the server on the port defined the config file
-		console.log('Server started on port ' + config.serverPort + ', waiting for requests...');
+		logger.info('Server started on port ' + config.serverPort + ', waiting for requests...');
 		app.listen(config.serverPort);
 	})();
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const logger = require('@coya/logger')(require('../config').logging);
 const path = require('path');
 const util = require('util');
 
@@ -18,7 +19,7 @@ const CURRENT_FOLDER = '.';
 	await asyncForEach(files, async (fileName) => {
 		let extension = path.extname(fileName).toLowerCase();
 		if (['.jpg', '.jpeg', '.png'].indexOf(extension) == -1) {
-			//console.warn('File "' + fileName + '" ignored.');
+			logger.warning('File "' + fileName + '" ignored.');
 			return;
 		}
 
@@ -27,10 +28,10 @@ const CURRENT_FOLDER = '.';
 		if (metadata.exif) {
 			let exifData = exif(metadata.exif);
 			if (exifData.image.ModifyDate) {
-				//console.debug(exifData.image.ModifyDate);
+				logger.debug(exifData.image.ModifyDate);
 				let newFilePath = path.resolve(CURRENT_FOLDER, convertDate(exifData.image.ModifyDate) + extension);
 				await rename(filePath, newFilePath);
-				console.log(newFilePath);
+				logger.info(newFilePath);
 			}
 		}
 	});

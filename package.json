@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=development node src/server.js",
     "dev": "NODE_ENV=development nodemon -e js,twig,md src/server.js",
-    "prod": "NODE_ENV=production forever start src/server.js"
+    "prod": "NODE_ENV=production forever --id blog start src/server.js"
   },
   "bin": {
     "import-pics": "./scripts/import_pics.js",
@@ -16,6 +16,7 @@
   "author": "Coya",
   "license": "ISC",
   "dependencies": {
+    "@coya/logger": "0.0.2",
     "dateformat": "^3.0.3",
     "exif-reader": "^1.0.2",
     "express": "^4.16.3",
