@@ -1,7 +1,6 @@
 const {Counter, countVisitors} = require('@coya/counter');
 const express = require('express');
 const logger = require('@coya/logger')(require('../config').logging);
-const Raven = require('raven');
 const twig = require('twig');
 
 const config = require('../config');
@@ -9,14 +8,6 @@ const converter = new (require('./converter'))(config.markdownFolder, config.pos
 
 process.on('uncaughtException', logger.error.bind(logger));
 process.on('unhandledRejection', logger.error.bind(logger));
-
-// configure Raven to report error if Sentry endpoint is specified
-if (config.sentryEndpoint)
-	Raven.config(config.sentryEndpoint, {
-		shouldSendCallback: data => {
-			return process.env.NODE_ENV == 'production';
-		}
-	}).install();
 
 // init connection to database
 (async () => {

@@ -1,6 +1,5 @@
 module.exports = {
     serverPort: 8080,
-    sentryEndpoint: null,
     markdownFolder: __dirname + '/markdown/', 
     postsFolder: __dirname + '/ui/posts/',
     templatesFolder: __dirname + '/ui/templates/',
