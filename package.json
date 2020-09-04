@@ -22,7 +22,7 @@
     "exif-reader": "^1.0.2",
     "express": "^4.16.3",
     "inquirer": "^6.2.2",
-    "showdown": "^1.8.6",
+    "showdown": "^1.9.1",
     "twig": "^1.12.0"
   },
   "devDependencies": {
